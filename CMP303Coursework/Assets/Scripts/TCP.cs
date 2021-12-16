@@ -24,12 +24,7 @@ public class TCP
 
     public static float roundTrip = 0;
 
-    struct chatMessage
-    {
-        //u = username, c = chat, p = player data-
-        public char typeOfMessage;
-        public string message;
-    }
+
     
     public void ConnectToServer(int port,string ip)
     {
@@ -131,7 +126,8 @@ public class TCP
             Array.Copy(receiveBuffer, _data, byteLength);
 
             char typeOfMessage = BitConverter.ToChar(_data, 0);
-            Debug.Log(string.Format("Received {0} bytes from server.", byteLength));
+
+
             switch (typeOfMessage)
             {
                 case 't':
@@ -159,9 +155,10 @@ public class TCP
                     
                     break;
                 case 'z':
-                    Packet.ZombieStruct zombieMessage = Packet.ConvertByteArray(_data);
+                    
+                        Packet.ZombieStruct zombieMessage = Packet.ConvertByteArray(_data);
 
-                    GameManager.instance.HandleZombieData(zombieMessage);
+                        GameManager.instance.HandleZombieData(zombieMessage);
                     break;
                 case 'p':
                     //Build data into struct again
@@ -185,6 +182,24 @@ public class TCP
 
                     GameManager.numOfPlayers = numOfPlayers;
                     GameManager.instance.spawnPlayer = true;
+                    break;
+                case 'k':
+                    int idOfPlayer = BitConverter.ToInt32(_data, 2);
+                    int idOfZombie = BitConverter.ToInt32(_data, 6);
+
+                    Debug.Log(string.Format("Id: {0}", idOfPlayer));
+                    Debug.Log(string.Format("IdZombie: {0}", idOfZombie));
+
+                    if(idOfPlayer == Client.instance.id)
+                    {
+                        GameManager.kills++;
+                    }
+                    GameManager.instance.zombies[idOfZombie].alive = false;
+                    break;
+                case 'h':
+                    int health = BitConverter.ToInt32(_data, 2);
+                    GameManager.health -= health;
+
                     break;
             
             }
@@ -215,7 +230,6 @@ public class TCP
         try
         {
         int bytesSent = socket.EndSend(_result);
-        //Debug.Log(string.Format("Sent {0} bytes to the server.", bytesSent));
         }catch(Exception _e)
         {
            Debug.Log(_e.ToString());

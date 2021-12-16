@@ -25,7 +25,6 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
     Unity.CollabProxy.Editor.dll:
     - Unity.Cloud.Collaborate.UserInterface.CollaborateWindow
-    - Unity.Cloud.Collaborate.UserInterface.WindowCache
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
     UnityEditor.TestRunner.dll:
@@ -393,7 +392,7 @@ ScriptsOnlyBuild:
     className: SpriteShapeController
   - hash:
       serializedVersion: 2
-      Hash: 6d94b3b5172548542306d4dba5d2a78a
+      Hash: 5fdfbf07bd221742fac54091b93dbd21
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: AIZombie
@@ -519,7 +518,7 @@ ScriptsOnlyBuild:
     className: ActivationTrack
   - hash:
       serializedVersion: 2
-      Hash: 0f5b5eef766fdc4581f1e94224199479
+      Hash: 077f30522ae033ae04aefecb7935a279
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: UIManager
@@ -676,4 +675,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: C:/Users/lukes/OneDrive/Desktop/Game/CMP303Coursework.exe
+  playerPath: C:/Users/lukes/OneDrive/Desktop/Game Client/CMP303Coursework.exe

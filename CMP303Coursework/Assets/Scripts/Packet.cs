@@ -8,17 +8,17 @@ public class Packet
     //18 Bytes
     public struct ZombieStruct
     {
-        public ZombieStruct(int numOfZombies)
-        {
-            typeOfMessage = 'z';
-            timestamp = 0;
-            XPos = new float[numOfZombies];
-            YPos = new float[numOfZombies];
-        }
         public char typeOfMessage; // 2 Bytes
-        public float timestamp; //4 bytes
-        public float[] XPos;
-        public float[] YPos;
+        public int indexOfZombie; // 4 bytes
+        public float xPos;  //4 Bytes
+        public float yPos; //4 Bytes
+        public float timestamp; // 4 bytes
+    }
+    public struct ZombieCollision
+    {
+        public char typeOfMessage;
+        public float timestamp;
+        public int indexHit;
     }
 
     public struct PlayerStruct
@@ -42,15 +42,12 @@ public class Packet
 
     public static ZombieStruct ConvertByteArray(byte[] data)
     {
-        ZombieStruct zombieMessage = new ZombieStruct(10);
-        zombieMessage.timestamp = BitConverter.ToSingle(data,2);
-        int index = 6;
-        for(int i = 0; i < 10; i++)
-        {
-            zombieMessage.XPos[i] = BitConverter.ToSingle(data, index);
-            zombieMessage.YPos[i] = BitConverter.ToSingle(data, index + 4);
-            index += 8;
-        }
+        ZombieStruct zombieMessage = new ZombieStruct();
+        zombieMessage.indexOfZombie = BitConverter.ToInt32(data,2);
+        zombieMessage.xPos = BitConverter.ToSingle(data, 6);
+        zombieMessage.yPos = BitConverter.ToSingle(data, 10);
+        zombieMessage.timestamp = BitConverter.ToSingle(data, 10);
+        
 
         return zombieMessage;
     }
@@ -67,11 +64,8 @@ public class Packet
 
         if (GameManager.numOfPlayers >= 2)
         {
-            Debug.Log("Reached The ConvertPlayerArray");
             playerMessage.XPosP2 = BitConverter.ToSingle(data, 18);
-            Debug.Log(playerMessage.XPosP2);
             playerMessage.YPosP2 = BitConverter.ToSingle(data, 22);
-            Debug.Log(playerMessage.YPosP2);
             playerMessage.ZRotP2 = BitConverter.ToSingle(data, 26);
         }
 
@@ -89,6 +83,21 @@ public class Packet
             playerMessage.ZRotP4 = BitConverter.ToSingle(data, 50);
         }
         return playerMessage;
+    }
+
+    public static byte[] createCollisionInfo(int indexHit)
+    {
+        ZombieCollision coll;
+        coll.typeOfMessage = 'z';
+        coll.timestamp = GameManager.gameTime;
+        coll.indexHit = indexHit;
+
+        byte[] data = new byte[10];
+        Array.Copy(BitConverter.GetBytes(coll.typeOfMessage), 0, data, 0,2);
+        Array.Copy(BitConverter.GetBytes(coll.timestamp), 0, data, 2,4);
+        Array.Copy(BitConverter.GetBytes(coll.indexHit), 0, data, 6,4);
+
+        return data;
     }
 
 }

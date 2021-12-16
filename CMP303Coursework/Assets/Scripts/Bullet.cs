@@ -35,19 +35,25 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.transform.tag == "Enemy")
-        {
-            simulating = false;
-            gameObject.SetActive(false);
-            //Either Take Health Or Kill
-        }
-
+     
         if(collision.transform.tag == "Wall")
         {
             simulating = false;
             gameObject.SetActive(false);
         }
     }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.transform.tag == "Enemy")
+        {
+            simulating = false;
+            byte[] data = Packet.createCollisionInfo(other.GetComponent<AIZombie>().id);
+            Client.instance.SendTCP(data);
+            gameObject.SetActive(false);
+            Debug.Log("Hit Zombie");
+        }
+    }
+
 
     public void Fire(Vector2 origin,Vector2 _dir)
     {

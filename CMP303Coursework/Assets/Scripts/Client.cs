@@ -65,10 +65,10 @@ public class Client : MonoBehaviour
         }
     }*/
 
-    public void ConnectToServer()
+    public void ConnectToServer(string _ip)
     {
         //Connect to the server using the tcp socket - passing through the ip and port
-        tcp.ConnectToServer(port,ip);
+        tcp.ConnectToServer(port,_ip);
        // udp.setUpUDP(ip, port);
        
     }

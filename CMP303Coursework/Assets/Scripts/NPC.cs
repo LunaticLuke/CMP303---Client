@@ -103,17 +103,21 @@ public class NPC : MonoBehaviour
        float speedX = lastUpdate.x - secondFromLastUpdate.x;
        float speedY = lastUpdate.y - secondFromLastUpdate.y;
 
-        if (speedX != 0)
-        {
-            speedX /= latestMessageTimes[1] - latestMessageTimes[0];
+        float timeDifference = latestMessageTimes[1] - latestMessageTimes[0];
 
-        }
-     
-        if (speedY != 0)
+        if (timeDifference != 0)
         {
-            speedY /= latestMessageTimes[1] - latestMessageTimes[0];
+            if (speedX != 0)
+            {
+                speedX /= latestMessageTimes[1] - latestMessageTimes[0];
+
+            }
+
+            if (speedY != 0)
+            {
+                speedY /= latestMessageTimes[1] - latestMessageTimes[0];
+            }
         }
-       
        
 
          float timeSinceLastMessage = timeLastMessageReceived - latestMessageTimes[1];

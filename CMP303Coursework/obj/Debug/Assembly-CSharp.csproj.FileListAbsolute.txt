@@ -1,0 +1,2 @@
+D:\Documents\Y3S1\CMP303\CMP303---Client\CMP303Coursework\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
+D:\Documents\Y3S1\CMP303\CMP303---Client\CMP303Coursework\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache

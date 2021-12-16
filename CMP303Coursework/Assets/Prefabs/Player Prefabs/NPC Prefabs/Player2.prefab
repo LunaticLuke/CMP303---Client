@@ -1538,6 +1538,7 @@ MonoBehaviour:
   - 0
   newServerUpdate: 0
   latestGameTime: 0
+  timeLastMessageReceived: 0
   zRot: 0
   latestXValues:
   - 0

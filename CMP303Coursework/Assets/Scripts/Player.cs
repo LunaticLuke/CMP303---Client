@@ -52,9 +52,6 @@ public class Player : MonoBehaviour
 
     const int ammoClip = 10;
 
-    int currentAmmo = 10;
-
-
     public Bullet[] bullets = new Bullet[ammoClip];
 
     public Transform gunOrigin;
@@ -98,10 +95,10 @@ public class Player : MonoBehaviour
         }
        
         
-         if(Input.GetMouseButtonDown(0) && currentAmmo > 0)
+         if(Input.GetMouseButtonDown(0))
         {
             Shoot();
-            currentAmmo--;
+           
         }
 
 

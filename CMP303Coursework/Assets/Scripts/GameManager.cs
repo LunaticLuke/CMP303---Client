@@ -25,10 +25,11 @@ public class GameManager : MonoBehaviour
 
     public GameObject zombiePrefab;
 
-    public AIZombie[] zombies = new AIZombie[10];
+    public AIZombie[] zombies = new AIZombie[5];
 
     public Vector3[] zombieStarts = new Vector3[10];
 
+    public static int kills = 0;
 
     public static float gameTime = 0;
 
@@ -102,11 +103,12 @@ public class GameManager : MonoBehaviour
 
     void SpawnZombies()
     {
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 5; i++)
         {
             GameObject spawnedZombie = Instantiate(zombiePrefab);
             zombies[i] = spawnedZombie.GetComponent<AIZombie>();
             zombies[i].SetPosition(zombieStarts[i]);
+            zombies[i].id = i;
             zombies[i].alive = true;
         }
     }
@@ -166,12 +168,12 @@ public class GameManager : MonoBehaviour
 
     public void HandleZombieData(Packet.ZombieStruct data)
     {
-        for(int i = 0; i < 10; i++)
-        {
-            zombies[i].latestServerUpdate[0] = data.XPos[i];
-            zombies[i].latestServerUpdate[1] = data.YPos[i];
-            zombies[i].latestMessageTime = data.timestamp;
-            zombies[i].hasMessage = true;
-        }
+        
+            zombies[data.indexOfZombie].latestServerUpdate[0] = data.xPos;
+            zombies[data.indexOfZombie].latestServerUpdate[1] = data.yPos;
+            zombies[data.indexOfZombie].latestMessageTime = data.timestamp;
+            zombies[data.indexOfZombie].timeLastMessageReceived = gameTime;
+            zombies[data.indexOfZombie].hasMessage = true;
+        
     }
 }

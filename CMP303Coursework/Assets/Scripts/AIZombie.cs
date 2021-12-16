@@ -6,6 +6,8 @@ public class AIZombie : MonoBehaviour
 {
 
     float speed = 0.5f;
+    [HideInInspector]
+    public int id;
 
     Transform target;
 
@@ -19,7 +21,7 @@ public class AIZombie : MonoBehaviour
 
     Vector2[] recentPositions = new Vector2[2];
 
-    float timeLastMessageReceived;
+    public float timeLastMessageReceived;
 
     float[] latestMessageTimes = new float[2];
 
@@ -34,6 +36,10 @@ public class AIZombie : MonoBehaviour
     public GameObject ghostPos;
 
     public bool alive = false;
+
+    bool respawning = false;
+
+    float respawnTimer = 4.0f;
 
 
 
@@ -53,13 +59,22 @@ public class AIZombie : MonoBehaviour
     {
         if(hasMessage)
         {
+            
             HandleData();
             targetPos = Prediction();
             hasMessage = false;
         }
-        float step = (1 * speed) * Time.deltaTime;
-        transform.position = Vector2.MoveTowards(transform.position, targetPos, step);
-        ghostPos.transform.position = new Vector2(latestServerUpdate[0], latestServerUpdate[1]);
+        if (alive)
+        {
+            float step = (1 * speed) * Time.deltaTime;
+            transform.position = Vector2.MoveTowards(transform.position, targetPos, step);
+            ghostPos.transform.position = new Vector2(latestServerUpdate[0], latestServerUpdate[1]);
+        }
+            if(!respawning && !alive)
+            {
+                respawning = true;
+                StartCoroutine(Respawn());
+            }
     }
 
     public void HandleData()
@@ -82,17 +97,19 @@ public class AIZombie : MonoBehaviour
         float speedX = lastUpdate.x - secondFromLastUpdate.x;
         float speedY = lastUpdate.y - secondFromLastUpdate.y;
 
-        if (speedX != 0)
+        if (latestMessageTimes[1] - latestMessageTimes[0] != 0)
         {
-            speedX /= latestMessageTimes[1] - latestMessageTimes[0];
+            if (speedX != 0)
+            {
+                speedX /= latestMessageTimes[1] - latestMessageTimes[0];
 
+            }
+
+            if (speedY != 0)
+            {
+                speedY /= latestMessageTimes[1] - latestMessageTimes[0];
+            }
         }
-
-        if (speedY != 0)
-        {
-            speedY /= latestMessageTimes[1] - latestMessageTimes[0];
-        }
-
 
 
         float timeSinceLastMessage = GameManager.gameTime - timeLastMessageReceived;
@@ -110,6 +127,19 @@ public class AIZombie : MonoBehaviour
     public void SetPosition(Vector3 pos)
     {
         transform.position = pos;
+    }
+
+    public IEnumerator Respawn()
+    {
+        SetPosition(new Vector2(-500, 0));
+        yield return new WaitForSeconds(respawnTimer);
+        SetPosition(GameManager.instance.zombieStarts[id]);
+        gameObject.SetActive(true);
+        recentPositions[0] = transform.position;
+        recentPositions[1] = transform.position;
+        targetPos = Prediction();
+        alive = true;
+        respawning = false;
     }
 
 }

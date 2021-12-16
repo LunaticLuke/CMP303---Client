@@ -21,7 +21,12 @@ public class UIManager : MonoBehaviour
     public Text posText;
 
     public Text pingText;
-   
+
+    public Text KillsText;
+
+    public Slider healthBar;
+
+    public InputField ipField;
 
     public Text textUI;
     //Chat log
@@ -63,6 +68,9 @@ public class UIManager : MonoBehaviour
         //Update the UI to get rid of editor placeholder text
         DisplayChat();
         sendBuffer = new byte[Client.dataBufferSize];
+        healthBar.maxValue = GameManager.health;
+        healthBar.value = GameManager.health;
+        ipField.text = "92.238.155.69";
     }
 
     private void Update()
@@ -81,7 +89,7 @@ public class UIManager : MonoBehaviour
 
         if (usernameField.text.Length > 0)
         {
-            Client.instance.ConnectToServer();
+            Client.instance.ConnectToServer(ipField.text);
         }
         else
         {
@@ -177,6 +185,8 @@ public class UIManager : MonoBehaviour
         {
             //posText.text = string.Format("P1: {0} , {1}", Player.instance.transform.position.x, Player.instance.transform.position.y);
             pingText.text = string.Format("{0} Seconds", GameManager.gameTime);
+            KillsText.text = string.Format("Kills: {0}", GameManager.kills);
+            healthBar.value = GameManager.health;
         }
         else
         {

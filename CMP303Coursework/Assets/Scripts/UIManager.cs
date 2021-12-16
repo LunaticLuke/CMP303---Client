@@ -18,12 +18,9 @@ public class UIManager : MonoBehaviour
     public InputField chatField;
     //Has the username be sent
     bool sentUsername = false;
-    public Text posText;
-
-    public Text pingText;
-
+    //Displays Kills
     public Text KillsText;
-
+    //Health bar slider
     public Slider healthBar;
 
     public InputField ipField;
@@ -67,6 +64,7 @@ public class UIManager : MonoBehaviour
         }
         //Update the UI to get rid of editor placeholder text
         DisplayChat();
+        //Initialise the sendbuffer and health bar and set a default value for the ipfield 
         sendBuffer = new byte[Client.dataBufferSize];
         healthBar.maxValue = GameManager.health;
         healthBar.value = GameManager.health;
@@ -75,22 +73,28 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
+        //Render chat to screen
         DisplayChat();
+        //Render UI
         displayUI();
+        //If a ping message is in progress
         if(pinging)
         {
+            //Count up
             pingTimer += Time.deltaTime;
         }
     }
 
     public void ConnectToServer()
     {
-        //startMenu.SetActive(false);
-
+        
+        //Ensure that a username is entered
         if (usernameField.text.Length > 0)
         {
+            //Connect passing through the ip
             Client.instance.ConnectToServer(ipField.text);
         }
+        //otherwise, remind the player to set a username;
         else
         {
 
@@ -108,19 +112,21 @@ public class UIManager : MonoBehaviour
             if (usernameField.text.Length > 0)
             {
                 sentUsername = true;
-
+                //Form a chatmessage struct
                 chatMessage messageToSend;
+                //Its a username message so mark it as such
                 messageToSend.typeOfMessage = 'u';
+                //Set the message equal to the username field's contents
                 messageToSend.message = usernameField.text;
 
-
+                //Convert it to bytes
                 byte[] data = new byte[messageToSend.message.Length + 2];
                 Array.Copy(BitConverter.GetBytes(messageToSend.typeOfMessage), 0, data, 0, 2);
                 Array.Copy(Encoding.ASCII.GetBytes(messageToSend.message), 0, data, 2, messageToSend.message.Length);
 
 
                 //Debug.Log(String.Format("String From Array Is {0}", Encoding.ASCII.GetString(data, 2, data.Length - 2)));
-
+                //Send over TCP
                 Client.instance.SendTCP(data);
             }
         }
@@ -137,7 +143,7 @@ public class UIManager : MonoBehaviour
             byte[] data = new byte[messageToSend.message.Length + 2];
             Array.Copy(BitConverter.GetBytes(messageToSend.typeOfMessage), 0, data, 0, 2);
             Array.Copy(Encoding.ASCII.GetBytes(messageToSend.message), 0, data, 2, messageToSend.message.Length);
-
+            //Send over TCP
             Client.instance.SendTCP(data);
         }
     }

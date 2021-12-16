@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Similar to the NPC class except it predicts the AI zombies
 public class AIZombie : MonoBehaviour
 {
 
@@ -46,6 +47,7 @@ public class AIZombie : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Initalise the arrays with current position data
         recentPositions[0] = transform.position;
         recentPositions[1] = transform.position;
         latestMessageTimes[0] = 0;
@@ -57,10 +59,12 @@ public class AIZombie : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //If an update is here
         if(hasMessage)
         {
             
             HandleData();
+            //Predict
             targetPos = Prediction();
             hasMessage = false;
         }

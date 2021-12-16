@@ -1,3 +1,5 @@
+//With Help From Weiland, 2019, Connecting Unity Clients to a Dedicated Server | C# Networking Tutorial - Part 1
+
 using System.Collections;
 using System;
 using System.Collections.Generic;
@@ -17,12 +19,10 @@ public class TCP
     //The send buffer that send writes to
     private byte[] sendBuffer;
 
-    public float timer;
 
 
-    bool pinging = false;
 
-    public static float roundTrip = 0;
+    
 
 
     
@@ -67,31 +67,14 @@ public class TCP
     }
 
 
-    private static void PingCompletedCallback(object sender, PingCompletedEventArgs e)
-    {
 
-        if(e.Cancelled)
-        {
-            Debug.Log("Ping Cancelled");
-            ((AutoResetEvent)e.UserState).Set(); 
-        }
 
-        if(e.Error != null)
-        {
-            Debug.Log("Ping Failed: ");
-            Debug.Log(e.Error.ToString());
-            ((AutoResetEvent)e.UserState).Set();
-        }
 
-        PingReply reply = e.Reply;
-        roundTrip = reply.RoundtripTime;
-        
-    }
 
-    
-    
-        
 
+    //Triggered if something can be received on the TCP socket.
+    //Switch statement features various types of message that can come through.
+    //I made use of a char to distinguish between the types of messages.
     private void Receive()
     {
         //A try catch block will attempt to catch any exceptions
@@ -130,17 +113,18 @@ public class TCP
 
             switch (typeOfMessage)
             {
+                //Ping Data
                 case 't':
                     UIManager.instance.PingResult();
                     break;
-
+                //Username Data
                 case 'u':
                     int id = BitConverter.ToInt32(_data, 2);
                    // Debug.Log(string.Format("Assigned ID Is Now {0}", id));
                     Client.instance.id = id;
                     break;
 
-
+                //Chat Data
                 case 'c':
                  
                 string message = Encoding.ASCII.GetString(_data, 2, byteLength - 2);
@@ -154,12 +138,14 @@ public class TCP
                         UIManager.instance.chatMessages[UIManager.instance.chatMessages.Length - 1] = message;
                     
                     break;
+                //Zombie Data
                 case 'z':
-                    
+                    //Allow the packet class to convert bytes to struct
                         Packet.ZombieStruct zombieMessage = Packet.ConvertByteArray(_data);
-
+                        //Game manager handles it
                         GameManager.instance.HandleZombieData(zombieMessage);
                     break;
+                 //Player Data
                 case 'p':
                     //Build data into struct again
                     Packet.PlayerStruct playerData = Packet.ConvertPlayerArray(_data);
@@ -167,7 +153,9 @@ public class TCP
                     //Pass the struct through to the game manager that will send the data for prediction
                     GameManager.instance.HandlePositionData(playerData);
                     break;
+                //Bullet Data
                 case 'b':
+                    //Convert the bullet data to floats and ints
                     float xOrigin = BitConverter.ToSingle(_data, 2);
                     float yOrigin = BitConverter.ToSingle(_data, 6);
                     float dirX = BitConverter.ToSingle(_data, 10);
@@ -183,6 +171,7 @@ public class TCP
                     GameManager.numOfPlayers = numOfPlayers;
                     GameManager.instance.spawnPlayer = true;
                     break;
+                //Zombie Kill
                 case 'k':
                     int idOfPlayer = BitConverter.ToInt32(_data, 2);
                     int idOfZombie = BitConverter.ToInt32(_data, 6);
@@ -196,6 +185,7 @@ public class TCP
                     }
                     GameManager.instance.zombies[idOfZombie].alive = false;
                     break;
+                //Health Update
                 case 'h':
                     int health = BitConverter.ToInt32(_data, 2);
                     GameManager.health -= health;
